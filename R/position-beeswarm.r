@@ -8,11 +8,21 @@
 #' @examples
 #'
 #' qplot(class, hwy, data = mpg, position="beeswarm")
-position_beeswarm <- function (width = NULL, height = NULL) {
-  PositionBeeswarm$new(width = width, height = height)
+position_beeswarm <- function (width = NULL, nbins = NULL) {
+  PositionBeeswarm$new(width = width, nbins = nbins)
 }
 
 PositionBeeswarm <- proto(Position, {
+  width = NULL
+  nbins = NULL
+
+  new <- function(.,
+                  width = NULL,
+                  nbins = NULL) {
+    .$proto(width=width,
+            nbins=nbins)
+  }
+
   objname <- "beeswarm"
 
   adjust <- function(., data) {
@@ -28,7 +38,7 @@ PositionBeeswarm <- proto(Position, {
 
     if(.$width > 0) {
 
-      y_bins <- seq(min(data$y), max(data$y), length.out=nbins)
+      y_bins <- seq(min(data$y), max(data$y), length.out=.$nbins)
 
       trans_x <- function(x) {
 
@@ -41,16 +51,13 @@ PositionBeeswarm <- proto(Position, {
             len <- length(xy_bin)
             if (len == 0) {
               return(xy_bin)
+            } else {
+              w <- .$width/max_len
+              offsets <- seq((-w)*((len-1)/2), w*((len-1)/2), by=w)
+              return(offsets)
             }
-
-            w <- .$width/max_len
-            offsets <- seq((-w)*((len-1)/2), w*((len-1)/2), by=w)
-
-            return(offsets)
           })
-
           unsplit(xy_offsets, cuts)
-
         })
 
         x_offsets <- unsplit(x_offsets, x)
