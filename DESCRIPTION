@@ -140,6 +140,7 @@ Collate:
     'plot-render.r'
     'plot.r'
     'position-.r'
+    'position-beeswarm.r'
     'position-collide.r'
     'position-dodge.r'
     'position-fill.r'
