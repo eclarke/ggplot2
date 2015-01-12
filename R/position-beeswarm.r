@@ -45,7 +45,7 @@ PositionBeeswarm <- proto(Position, {
         split_y <- split(data$y, x)
         max_len <- max(sapply(split_y, function(i) max(table(cut(i, y_bins)))))
 
-        x_offsets <- sapply(split_y, function(x_class) {
+        x_offsets <- lapply(split_y, function(x_class) {
           cuts <- cut(x_class, y_bins)
           xy_offsets <- sapply(split(x_class, cuts), function(xy_bin) {
             len <- length(xy_bin)
@@ -57,6 +57,7 @@ PositionBeeswarm <- proto(Position, {
               return(offsets)
             }
           })
+
           unsplit(xy_offsets, cuts)
         })
 
