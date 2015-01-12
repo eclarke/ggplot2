@@ -4,13 +4,13 @@
 \alias{position_beeswarm}
 \title{Beeswarm-style plots to show overlapping points. x must be discrete.}
 \usage{
-position_beeswarm(width = NULL, height = NULL)
+position_beeswarm(width = NULL, nbins = NULL)
 }
 \arguments{
 \item{width}{degree of jitter in x direction. Defaults to 90\% of the
 resolution of the data.}
 
-\item{height}{ignored}
+\item{nbins}{the number of divisions of the y-axis to use (default: \code{length(y)/5})}
 }
 \description{
 Beeswarm-style plots to show overlapping points. x must be discrete.

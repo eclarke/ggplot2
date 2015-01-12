@@ -3,7 +3,7 @@
 #' @family position adjustments
 #' @param width degree of jitter in x direction. Defaults to 90\% of the
 #'   resolution of the data.
-#' @param height ignored
+#' @param nbins the number of divisions of the y-axis to use (default: \code{length(y)/5})
 #' @export
 #' @examples
 #'
