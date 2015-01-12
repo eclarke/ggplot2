@@ -31,8 +31,10 @@ PositionBeeswarm <- proto(Position, {
     check_required_aesthetics(c("x", "y"), names(data), "position_jitter")
 
     if (is.null(.$width)) .$width <- resolution(data$x, zero = FALSE) * 0.9
-    if (is.null(.$nbins)) .$nbins <- as.integer(length(data$y)/5)
-
+    if (is.null(.$nbins)) {
+      .$nbins <- as.integer(length(data$y)/5)
+      message("Default number of y-bins used (", .$nbins, ").")
+    }
     trans_x <- NULL
     trans_y <- NULL
 
@@ -47,6 +49,7 @@ PositionBeeswarm <- proto(Position, {
 
         x_offsets <- lapply(split_y, function(x_class) {
           cuts <- cut(x_class, y_bins)
+
           xy_offsets <- sapply(split(x_class, cuts), function(xy_bin) {
             len <- length(xy_bin)
             if (len == 0) {
@@ -54,6 +57,8 @@ PositionBeeswarm <- proto(Position, {
             } else {
               w <- .$width/max_len
               offsets <- seq((-w)*((len-1)/2), w*((len-1)/2), by=w)
+              # Place higher y values at end of "smile"
+              offsets <- offsets[order(abs(offsets))][rank(xy_bin, ties="first")]
               return(offsets)
             }
           })
