@@ -61,7 +61,6 @@ PositionBeeswarm <- proto(Position, {
         max_len <- max(sapply(split_y, function(i) max(table(cut(i, y_bins)))))
 
         x_offsets <- lapply(split_y, function(x_class) {
-#           min_dist <- min(abs(diff(sort(x_class))))
           cuts <- cut(x_class, y_bins)
           shifts <- c(-1, 0)
           xy_bins <- split(x_class, cuts)
@@ -73,13 +72,12 @@ PositionBeeswarm <- proto(Position, {
             }
           })
           even_bins <- unlist(even_bins)
-          print(even_bins)
           has_adj <- sapply(seq_along(even_bins), function(i) {
-            if (i == 1) return(0)
-            even_bins[i] == even_bins[i-1]
+            if (i == length(even_bins)) return(0)
+            even_bins[i] == even_bins[i+1]
           })
 
-
+          if (length(has_adj) == 0) has_adj <- 0
           xy_offsets <- suppressWarnings(mapply(function(xy_bin, shift, adj) {
             len <- length(xy_bin)
             if (len == 0) {
@@ -90,7 +88,7 @@ PositionBeeswarm <- proto(Position, {
               # Place higher y values at end of "smile"
               offsets <- offsets[order(abs(offsets))][rank(xy_bin, ties="first")]
               # Offset if bin below also has even/odd items
-              if (adj) offsets <- offsets + shift * (w/2) else print("False")
+              if (adj) offsets <- offsets + shift * (w/2)
               return(offsets)
             }
           }, split(x_class, cuts), shifts, has_adj))
