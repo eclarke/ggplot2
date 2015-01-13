@@ -16,22 +16,30 @@
 #' qplot(variable, value, data = distro, position = position_beeswarm(spacing = 1/20, nbins=35))
 #' # Alternatively, can specify \code{width} parameter like \code{position_jitter}
 #' qplot(variable, value, data = distro, position = position_beeswarm(width=0.4)
-position_beeswarm <- function (width = NULL, nbins = NULL, spacing = NULL) {
-  PositionBeeswarm$new(width = width, nbins = nbins, spacing = spacing)
+position_beeswarm <- function (width = NULL, nbins = NULL, spacing = NULL, sesh=NULL,
+                               sesh2=NULL) {
+  PositionBeeswarm$new(width = width, nbins = nbins, spacing = spacing,
+                       sesh=sesh, sesh2=sesh2)
 }
 
 PositionBeeswarm <- proto(Position, {
   width = NULL
   nbins = NULL
   spacing = NULL
+  sesh = NULL
+  sesh2 = NULL
 
   new <- function(.,
                   width = NULL,
                   nbins = NULL,
-                  spacing = NULL) {
+                  spacing = NULL,
+                  sesh=NULL,
+                  sesh2=NULL) {
     .$proto(width=width,
             nbins=nbins,
-            spacing=spacing)
+            spacing=spacing,
+            sesh=sesh,
+            sesh2=sesh2)
   }
 
   objname <- "beeswarm"
@@ -53,14 +61,26 @@ PositionBeeswarm <- proto(Position, {
 
     if(.$width > 0) {
 
-      y_bins <- seq(min(data$y), max(data$y), length.out=.$nbins)
+
+
+
+#       y_bins <- seq(min(data$y), max(data$y), length.out=.$nbins)
+
 
       trans_x <- function(x) {
-
+#         dens <- density(data$y, adjust=.$sesh)
+#         y_auc <- cumsum(((.$sesh2-dens$y)^(.$sesh))*diff(dens$x)[1])
+#         y_cuts <- cut(y_auc, .$nbins)
+#         y_bins <- sapply(split(dens$x, y_cuts), min)
         split_y <- split(data$y, x)
-        max_len <- max(sapply(split_y, function(i) max(table(cut(i, y_bins)))))
+        max_len <- NULL #max(sapply(split_y, function(i) max(table(cut(i, y_bins)))))
 
         x_offsets <- lapply(split_y, function(x_class) {
+          dens <- density(x_class, adjust=.$sesh)
+          y_auc <- cumsum((((.$sesh2+max(dens$y))-dens$y)^(1/3))*diff(dens$x)[1])
+          y_cuts <- cut(y_auc, .$nbins)
+          y_bins <- sapply(split(dens$x, y_cuts), min)
+
           cuts <- cut(x_class, y_bins)
           shifts <- c(-1, 0)
           xy_bins <- split(x_class, cuts)
@@ -88,7 +108,7 @@ PositionBeeswarm <- proto(Position, {
               # Place higher y values at end of "smile"
               offsets <- offsets[order(abs(offsets))][rank(xy_bin, ties="first")]
               # Offset if bin below also has even/odd items
-              if (adj) offsets <- offsets + shift * (w/2)
+#               if (adj) offsets <- offsets + shift * (w/2)
               return(offsets)
             }
           }, split(x_class, cuts), shifts, has_adj))
