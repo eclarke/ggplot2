@@ -3,6 +3,13 @@ ggplot2 1.0.0
 
 NEW FEATURES
 
+* `position_beeswarm()` allows the user to create beeswarm-style scatterplots,
+  where overlapping points are plotted adjacent to each other. This helps with
+  overplotting in a way similar to `position_jitter()`, but centers the
+  overlapping points instead of randomly distributing them. The result is
+  similar to `geom_violin()` but shows each data point. Addresses issue #483.
+  See `example(position_beeswarm)` for usage. (@eclarke, ####)
+
 * New coordinate system for small scale maps. `coord_quickmap()` computes and
   sets the correct aspect ratio between one degree of latitude and one degree
   of longitude at the centre of the plotted region. It does not perform full
